@@ -61,27 +61,6 @@
         }
 
         h1 { margin: 0; font-size: 1.5rem; color: #F1F5F9; }
-        
-        .action-btns {
-            display: flex;
-            gap: 10px;
-        }
-
-        .action-btn {
-            background: #2563EB;
-            color: #FFF;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .action-btn:hover { background: #1D4ED8; }
-        .action-btn.secondary { background: #334155; }
-        .action-btn.secondary:hover { background: #475569; }
 
         .legend-row {
             display: flex;
@@ -292,10 +271,6 @@
 <header>
     <div class="header-top">
         <h1>English Language Matrix - your guide to language proficiency</h1>
-        <div class="action-btns">
-            <button class="action-btn" onclick="exportData()">📥 Export Progress Code</button>
-            <button class="action-btn secondary" onclick="importData()">📤 Import Backup Code</button>
-        </div>
     </div>
     
     <div class="legend-row">
@@ -469,35 +444,6 @@
                     nodesData = parsed;
                 }
             } catch(e) { console.error("Error loading local storage", e); }
-        }
-    }
-
-    function exportData() {
-        const jsonStr = JSON.stringify(nodesData);
-        navigator.clipboard.writeText(jsonStr).then(() => {
-            alert("Progress code copied to clipboard! You can paste this as a backup in Notion.");
-        }).catch(() => {
-            prompt("Copy your progress code below:", jsonStr);
-        });
-    }
-
-    function importData() {
-        const input = prompt("Paste your backup progress code here:");
-        if (input) {
-            try {
-                const parsed = JSON.parse(input);
-                if (Array.isArray(parsed) && parsed.length === TOTAL_NODES) {
-                    nodesData = parsed;
-                    saveToLocalStorage();
-                    recalculateAdjacency();
-                    renderGrid();
-                    alert("Progress backup successfully imported!");
-                } else {
-                    alert("Invalid code format.");
-                }
-            } catch(e) {
-                alert("Could not parse the backup code.");
-            }
         }
     }
 

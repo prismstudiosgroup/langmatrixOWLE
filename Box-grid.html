@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Skill Matrix (216 Nodes)</title>
+    <style>
+        :root {
+            --bg-color: #12131C;
+            --card-bg: #1E202E;
+            --card-border: #2A2D40;
+            --text-main: #E2E8F0;
+            --text-muted: #94A3B8;
+            --suggested-border: #CBD5E1;
+            --completed-bg: #15803D;
+            --completed-border: #22C55E;
+            --accent-purple: #8B5CF6;
+            --skill-s: #EF4444;
+            --skill-w: #3B82F6;
+            --skill-i: #F59E0B;
+            --skill-r: #10B981;
+            --skill-l: #8B5CF6;
+
+            /* CEFR Level Cluster Backgrounds */
+            --lvl-a1-bg: rgba(59, 130, 246, 0.22); /* Light Blue */
+            --lvl-a1-border: rgba(96, 165, 250, 0.4);
+            --lvl-a2-bg: rgba(34, 197, 94, 0.22); /* Light Green */
+            --lvl-a2-border: rgba(74, 222, 128, 0.4);
+            --lvl-b1-bg: rgba(168, 85, 247, 0.22); /* Light Purple */
+            --lvl-b1-border: rgba(192, 132, 252, 0.4);
+            --lvl-b2-bg: rgba(159, 18, 57, 0.35); /* Crimson */
+            --lvl-b2-border: rgba(244, 63, 94, 0.5);
+            --lvl-c1-bg: rgba(234, 179, 8, 0.25); /* Professional Warm Yellow/Gold */
+            --lvl-c1-border: rgba(250, 204, 21, 0.5);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            max-width: 1800px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; color: #F1F5F9; }
+        
+        .action-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: #2563EB;
+            color: #FFF;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover { background: #1D4ED8; }
+        .action-btn.secondary { background: #334155; }
+        .action-btn.secondary:hover { background: #475569; }
+
+        .legend-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.8rem;
+            background: #181926;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            align-items: center;
+        }
+
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-box { width: 14px; height: 14px; border-radius: 3px; border: 1px solid; }
+
+        /* Horizontal Scrolling Grid Wrapper */
+        .grid-container {
+            width: 100%;
+            max-width: 1800px;
+            overflow-x: auto;
+            background: #181926;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(24, 75px);
+            grid-template-rows: repeat(9, 75px);
+            gap: 8px;
+            width: max-content;
+        }
+
+        /* Card Styles */
+        .node-box {
+            border-radius: 6px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            user-select: none;
+            box-sizing: border-box;
+        }
+
+        .node-box.A1 { background: var(--lvl-a1-bg); border: 1px solid var(--lvl-a1-border); }
+        .node-box.A2 { background: var(--lvl-a2-bg); border: 1px solid var(--lvl-a2-border); }
+        .node-box.B1 { background: var(--lvl-b1-bg); border: 1px solid var(--lvl-b1-border); }
+        .node-box.B2 { background: var(--lvl-b2-bg); border: 1px solid var(--lvl-b2-border); }
+        .node-box.C1 { background: var(--lvl-c1-bg); border: 1px solid var(--lvl-c1-border); }
+
+        .node-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+        }
+
+        .node-box.suggested {
+            border-color: var(--suggested-border) !important;
+            box-shadow: 0 0 10px rgba(203, 213, 225, 0.6);
+        }
+
+        .node-box.completed {
+            background: var(--completed-bg) !important;
+            border-color: var(--completed-border) !important;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+
+        .skills-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 2px;
+        }
+
+        .skill-badge {
+            font-size: 0.55rem;
+            font-weight: 800;
+            width: 11px;
+            height: 11px;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.3);
+            color: #64748B;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .skill-badge.active.S { background: var(--skill-s); color: #fff; border-color: var(--skill-s); }
+        .skill-badge.active.W { background: var(--skill-w); color: #fff; border-color: var(--skill-w); }
+        .skill-badge.active.I { background: var(--skill-i); color: #fff; border-color: var(--skill-i); }
+        .skill-badge.active.R { background: var(--skill-r); color: #fff; border-color: var(--skill-r); }
+        .skill-badge.active.L { background: var(--skill-l); color: #fff; border-color: var(--skill-l); }
+
+        .node-title-display {
+            font-size: 0.52rem;
+            font-weight: 700;
+            color: #F8FAFC;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+            margin: 2px 0;
+        }
+
+        .node-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 0.48rem;
+            font-weight: 700;
+        }
+
+        .level-tag {
+            opacity: 0.7;
+            color: #CBD5E1;
+        }
+
+        .score-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.1;
+        }
+
+        .mc-line { color: #F59E0B; }
+        .MC-line { color: #60A5FA; }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1E1F2E;
+            border: 1px solid #3B82F6;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px; right: 20px;
+            background: none; border: none;
+            color: var(--text-muted); font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-section { margin-bottom: 20px; }
+        .modal-section h3 { margin: 0 0 10px 0; font-size: 1rem; color: #60A5FA; }
+
+        .skill-toggle-group {
+            display: flex; gap: 10px; margin-bottom: 15px;
+        }
+
+        .skill-toggle {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+            background: #11121C;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .skill-toggle.active { color: #fff; border-color: transparent; }
+        .skill-toggle.active[data-skill="S"] { background: var(--skill-s); }
+        .skill-toggle.active[data-skill="W"] { background: var(--skill-w); }
+        .skill-toggle.active[data-skill="I"] { background: var(--skill-i); }
+        .skill-toggle.active[data-skill="R"] { background: var(--skill-r); }
+        .skill-toggle.active[data-skill="L"] { background: var(--skill-l); }
+
+        .rubric-table {
+            width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px;
+        }
+        .rubric-table th, .rubric-table td {
+            border: 1px solid #334155; padding: 8px; text-align: left;
+        }
+        .rubric-table th { background: #0F172A; color: #94A3B8; }
+
+        input[type="number"], input[type="text"], textarea {
+            width: 100%; background: #0F172A; border: 1px solid #334155;
+            color: #fff; padding: 8px; border-radius: 4px; box-sizing: border-box;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-top">
+        <h1>English Language Matrix - your guide to language proficiency</h1>
+        <div class="action-btns">
+            <button class="action-btn" onclick="exportData()">📥 Export Progress Code</button>
+            <button class="action-btn secondary" onclick="importData()">📤 Import Backup Code</button>
+        </div>
+    </div>
+    
+    <div class="legend-row">
+        <strong style="color:#FFF;">Clusters:</strong>
+        <div class="legend-item"><div class="legend-box" style="background:var(--lvl-a1-bg); border-color:var(--lvl-a1-border)"></div> A1 (Light Blue)</div>
+        <div class="legend-item"><div class="legend-box" style="background:var(--lvl-a2-bg); border-color:var(--lvl-a2-border)"></div> A2 (Light Green)</div>
+        <div class="legend-item"><div class="legend-box" style="background:var(--lvl-b1-bg); border-color:var(--lvl-b1-border)"></div> B1 (Light Purple)</div>
+        <div class="legend-item"><div class="legend-box" style="background:var(--lvl-b2-bg); border-color:var(--lvl-b2-border)"></div> B2 (Crimson)</div>
+        <div class="legend-item"><div class="legend-box" style="background:var(--lvl-c1-bg); border-color:var(--lvl-c1-border)"></div> C1 (Warm Gold)</div>
+        <span style="margin: 0 10px; color:#334155;">|</span>
+        <strong style="color:#FFF;">States:</strong>
+        <div class="legend-item"><div class="legend-box" style="background:var(--suggested-border); border-color:#FFF"></div> Possible Path</div>
+        <div class="legend-item"><div class="legend-box" style="background:var(--completed-bg); border-color:var(--completed-border)"></div> Completed</div>
+    </div>
+</header>
+
+<div class="grid-container">
+    <div class="grid" id="matrixGrid"></div>
+</div>
+
+<!-- Modal Shadow Box -->
+<div class="modal-overlay" id="nodeModal" onclick="handleOverlayClick(event)">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+        
+        <h2 id="modalTitle" style="margin-top:0;">Language Block Details</h2>
+        
+        <div class="modal-section">
+            <h3>1. Block Identity & Goals (Editable)</h3>
+            <input type="text" id="customTitleInput" placeholder="Custom Block Name (e.g., Simple Present & Daily Routines)" onchange="saveCustomTitle(this.value)" style="margin-bottom: 8px;">
+            <textarea id="modalGoalsInput" rows="3" placeholder="Enter target language points/goals for this block..." onchange="saveGoals(this.value)"></textarea>
+        </div>
+
+        <div class="modal-section">
+            <h3>2. Skills completed</h3>
+            <div class="skill-toggle-group">
+                <button class="skill-toggle" data-skill="S" onclick="toggleSkill('S')">S (Speaking)</button>
+                <button class="skill-toggle" data-skill="W" onclick="toggleSkill('W')">W (Writing)</button>
+                <button class="skill-toggle" data-skill="I" onclick="toggleSkill('I')">I (Interaction)</button>
+                <button class="skill-toggle" data-skill="R" onclick="toggleSkill('R')">R (Reading)</button>
+                <button class="skill-toggle" data-skill="L" onclick="toggleSkill('L')">L (Listening)</button>
+            </div>
+            <p id="skillGateWarning" style="font-size:0.8rem; color:#F59E0B;">⚠️ All 5 skills must be checked to unlock evaluations.</p>
+        </div>
+
+        <div class="modal-section" style="border-top: 1px solid #2A2D40; padding-top: 15px;">
+            <label style="font-size: 0.9rem; font-weight: 600; color: #F59E0B; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="hasMiniCheckbox" onchange="toggleMiniChallenge(this.checked)">
+                <span>Require Mini-Challenge for this block?</span>
+            </label>
+        </div>
+
+        <!-- Mini-Challenge Section -->
+        <div class="modal-section" id="miniSection" style="display: none; background: #161B26; padding: 15px; border-radius: 8px; border: 1px solid #F59E0B;">
+            <h3 style="color: #F59E0B; margin-top: 0;">3a. Mini-Défi : Évaluation (Score requis : ≥ 80%)</h3>
+            
+            <input type="text" id="miniTitleInput" placeholder="Titre du mini-défi (ex: Test rapide de grammaire)" onchange="saveMiniTitle(this.value)" style="margin-bottom: 8px;">
+            <textarea id="miniDescInput" rows="2" placeholder="Instructions/description du mini-défi..." onchange="saveMiniDesc(this.value)" style="margin-bottom: 10px;"></textarea>
+
+            <table class="rubric-table">
+                <thead>
+                    <tr><th>Domaine d'évaluation</th><th>Indicateur de réussite</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Précision & Ciblage</td><td>Démontre avec précision le point linguistique cible.</td></tr>
+                    <tr><td>Application pratique</td><td>Applique correctement la structure lors de contrôles rapides.</td></tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top: 12px;">
+                <label style="font-size:0.85rem; font-weight:600;">Score du Mini-Défi (0-100%):</label>
+                <input type="number" id="miniScoreInput" min="0" max="100" placeholder="e.g., 85" onchange="updateMiniScore(this.value)">
+                <span id="miniScoreStatus" style="font-size:0.8rem; font-weight:bold; margin-top:4px; display:block;"></span>
+            </div>
+
+            <textarea id="miniFeedbackInput" rows="2" style="margin-top:8px;" placeholder="Feedback du mini-défi..." onchange="saveMiniFeedback(this.value)"></textarea>
+        </div>
+
+        <!-- Maxi Challenge Section -->
+        <div class="modal-section" id="maxiSection" style="opacity: 0.5; pointer-events: none;">
+            <h3>3b. Maxi Challenge Evaluation (Score needed: ≥ 80%)</h3>
+            
+            <table class="rubric-table">
+                <thead>
+                    <tr><th>Domaine d'évolution</th><th>Indicateur de réussite</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Objectifs métier / vie</td><td>Mobilise le lexique avec créativité.</td></tr>
+                    <tr><td>Aisance linguistique</td><td>S'exprime avec aisance, flux maintenu.</td></tr>
+                    <tr><td>Interaction</td><td>Réagit de manière spontanée aux imprévus.</td></tr>
+                    <tr><td>Autonomie & outils</td><td>Mobilise ses ressources pour s'auto-corriger.</td></tr>
+                    <tr><td>Posture réflexive</td><td>Analyse ses forces/difficultés et planifie la suite.</td></tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top: 15px;">
+                <label style="font-size:0.85rem; font-weight:600;">Maxi Challenge Score (0-100%):</label>
+                <input type="number" id="maxiScoreInput" min="0" max="100" placeholder="e.g., 85" onchange="updateMaxiScore(this.value)">
+                <span id="maxiScoreStatus" style="font-size:0.8rem; font-weight:bold; margin-top:4px; display:block;"></span>
+            </div>
+        </div>
+
+        <div class="modal-section">
+            <h3>4. Feedback & Practice resources</h3>
+            <textarea id="feedbackInput" rows="3" placeholder="Trainer feedback..." onchange="saveFeedback(this.value)"></textarea>
+            <textarea id="resourcesInput" rows="2" style="margin-top:8px;" placeholder="Practice links or recommendations..." onchange="saveResources(this.value)"></textarea>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ROWS = 9;
+    const COLS = 24;
+    const TOTAL_NODES = ROWS * COLS;
+    const STORAGE_KEY = 'matrix_student_data_' + window.location.pathname;
+
+    function getClusterLevel(r, c) {
+        let offset = Math.sin(r * 0.7) * 1.2;
+        let val = c + offset;
+
+        if (val < 3.2) return 'A1';
+        if (val < 9.5) return 'A2';
+        if (val < 14.5) return 'B1';
+        if (val < 18.5) return 'B2';
+        return 'C1';
+    }
+
+    let nodesData = [];
+    let activeNodeId = null;
+
+    function initData() {
+        nodesData = [];
+        for (let i = 0; i < TOTAL_NODES; i++) {
+            let r = Math.floor(i / COLS);
+            let c = i % COLS;
+            let level = getClusterLevel(r, c);
+
+            nodesData.push({
+                id: i,
+                row: r,
+                col: c,
+                level: level,
+                customTitle: "",
+                goals: `Block ${i + 1} (${level}) - Target language points and key structures.`,
+                skills: { S: false, W: false, I: false, R: false, L: false },
+                hasMiniChallenge: false,
+                miniTitle: "",
+                miniDesc: "",
+                miniScore: null,
+                miniFeedback: "",
+                maxiScore: null,
+                completed: false,
+                suggested: (c === 0),
+                feedback: "",
+                resources: ""
+            });
+        }
+        loadFromLocalStorage();
+    }
+
+    function saveToLocalStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(nodesData));
+    }
+
+    function loadFromLocalStorage() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length === TOTAL_NODES) {
+                    nodesData = parsed;
+                }
+            } catch(e) { console.error("Error loading local storage", e); }
+        }
+    }
+
+    function exportData() {
+        const jsonStr = JSON.stringify(nodesData);
+        navigator.clipboard.writeText(jsonStr).then(() => {
+            alert("Progress code copied to clipboard! You can paste this as a backup in Notion.");
+        }).catch(() => {
+            prompt("Copy your progress code below:", jsonStr);
+        });
+    }
+
+    function importData() {
+        const input = prompt("Paste your backup progress code here:");
+        if (input) {
+            try {
+                const parsed = JSON.parse(input);
+                if (Array.isArray(parsed) && parsed.length === TOTAL_NODES) {
+                    nodesData = parsed;
+                    saveToLocalStorage();
+                    recalculateAdjacency();
+                    renderGrid();
+                    alert("Progress backup successfully imported!");
+                } else {
+                    alert("Invalid code format.");
+                }
+            } catch(e) {
+                alert("Could not parse the backup code.");
+            }
+        }
+    }
+
+    function renderGrid() {
+        const gridContainer = document.getElementById('matrixGrid');
+        gridContainer.innerHTML = '';
+
+        nodesData.forEach(node => {
+            const box = document.createElement('div');
+            box.className = `node-box ${node.level} ${node.completed ? 'completed' : (node.suggested ? 'suggested' : '')}`;
+            box.onclick = () => openModal(node.id);
+
+            const skillsHeader = document.createElement('div');
+            skillsHeader.className = 'skills-header';
+            ['S','W','I','R','L'].forEach(s => {
+                const badge = document.createElement('span');
+                badge.className = `skill-badge ${s} ${node.skills[s] ? 'active' : ''}`;
+                badge.innerText = s;
+                skillsHeader.appendChild(badge);
+            });
+
+            const titleDisplay = document.createElement('div');
+            titleDisplay.className = 'node-title-display';
+            titleDisplay.innerText = node.customTitle ? node.customTitle : '';
+
+            const footer = document.createElement('div');
+            footer.className = 'node-footer';
+
+            const lvlTag = document.createElement('span');
+            lvlTag.className = 'level-tag';
+            lvlTag.innerText = node.level;
+
+            const scoreStack = document.createElement('div');
+            scoreStack.className = 'score-stack';
+
+            if (node.hasMiniChallenge && node.miniScore !== null) {
+                const mcLine = document.createElement('div');
+                mcLine.className = 'mc-line';
+                mcLine.innerText = `mc ${node.miniScore}%`;
+                scoreStack.appendChild(mcLine);
+            }
+
+            if (node.maxiScore !== null) {
+                const MCLine = document.createElement('div');
+                MCLine.className = 'MC-line';
+                MCLine.innerText = `MC ${node.maxiScore}%`;
+                scoreStack.appendChild(MCLine);
+            } else if (node.completed) {
+                const MCLine = document.createElement('div');
+                MCLine.innerText = '✓ PASS';
+                scoreStack.appendChild(MCLine);
+            }
+
+            footer.appendChild(lvlTag);
+            footer.appendChild(scoreStack);
+
+            box.appendChild(skillsHeader);
+            box.appendChild(titleDisplay);
+            box.appendChild(footer);
+            gridContainer.appendChild(box);
+        });
+    }
+
+    function recalculateAdjacency() {
+        nodesData.forEach(n => { if (!n.completed) n.suggested = false; });
+        nodesData.forEach(n => { if (n.col === 0 && !n.completed) n.suggested = true; });
+
+        nodesData.forEach(n => {
+            if (n.completed) {
+                const neighbors = getNeighbors(n.row, n.col);
+                neighbors.forEach(nb => {
+                    if (!nb.completed) nb.suggested = true;
+                });
+            }
+        });
+    }
+
+    function getNeighbors(r, c) {
+        let neighbors = [];
+        const directions = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
+        directions.forEach(([dr, dc]) => {
+            let nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
+                neighbors.push(nodesData[nr * COLS + nc]);
+            }
+        });
+        return neighbors;
+    }
+
+    function openModal(id) {
+        activeNodeId = id;
+        const node = nodesData[id];
+        
+        document.getElementById('modalTitle').innerText = node.customTitle 
+            ? `${node.customTitle} (${node.level})` 
+            : `Block ${id + 1} (${node.level} Cluster)`;
+
+        document.getElementById('customTitleInput').value = node.customTitle || '';
+        document.getElementById('modalGoalsInput').value = node.goals || '';
+        document.getElementById('feedbackInput').value = node.feedback || '';
+        document.getElementById('resourcesInput').value = node.resources || '';
+        
+        document.getElementById('hasMiniCheckbox').checked = node.hasMiniChallenge;
+        document.getElementById('miniTitleInput').value = node.miniTitle || '';
+        document.getElementById('miniDescInput').value = node.miniDesc || '';
+        document.getElementById('miniScoreInput').value = node.miniScore !== null ? node.miniScore : '';
+        document.getElementById('miniFeedbackInput').value = node.miniFeedback || '';
+        
+        document.getElementById('maxiScoreInput').value = node.maxiScore !== null ? node.maxiScore : '';
+
+        toggleMiniChallenge(node.hasMiniChallenge);
+        updateSkillTogglesUI();
+        document.getElementById('nodeModal').style.display = 'flex';
+    }
+
+    function handleOverlayClick(e) {
+        if (e.target.id === 'nodeModal') closeModal();
+    }
+
+    function closeModal() {
+        document.getElementById('nodeModal').style.display = 'none';
+        saveToLocalStorage();
+        recalculateAdjacency();
+        renderGrid();
+    }
+
+    function saveCustomTitle(val) { 
+        nodesData[activeNodeId].customTitle = val; 
+        const node = nodesData[activeNodeId];
+        document.getElementById('modalTitle').innerText = val 
+            ? `${val} (${node.level})` 
+            : `Block ${node.id + 1} (${node.level} Cluster)`;
+        saveToLocalStorage();
+    }
+
+    function saveGoals(val) { nodesData[activeNodeId].goals = val; saveToLocalStorage(); }
+    function saveFeedback(val) { nodesData[activeNodeId].feedback = val; saveToLocalStorage(); }
+    function saveResources(val) { nodesData[activeNodeId].resources = val; saveToLocalStorage(); }
+
+    function toggleMiniChallenge(checked) {
+        const node = nodesData[activeNodeId];
+        node.hasMiniChallenge = checked;
+        document.getElementById('miniSection').style.display = checked ? 'block' : 'none';
+        updateSkillTogglesUI();
+        saveToLocalStorage();
+    }
+
+    function saveMiniTitle(val) { nodesData[activeNodeId].miniTitle = val; saveToLocalStorage(); }
+    function saveMiniDesc(val) { nodesData[activeNodeId].miniDesc = val; saveToLocalStorage(); }
+    function saveMiniFeedback(val) { nodesData[activeNodeId].miniFeedback = val; saveToLocalStorage(); }
+
+    function toggleSkill(skillKey) {
+        const node = nodesData[activeNodeId];
+        node.skills[skillKey] = !node.skills[skillKey];
+        updateSkillTogglesUI();
+        saveToLocalStorage();
+    }
+
+    function updateSkillTogglesUI() {
+        const node = nodesData[activeNodeId];
+        const allSkillsDone = Object.values(node.skills).every(v => v === true);
+        const miniPassed = !node.hasMiniChallenge || (node.miniScore !== null && node.miniScore >= 80);
+
+        document.querySelectorAll('.skill-toggle').forEach(btn => {
+            const sk = btn.getAttribute('data-skill');
+            if (node.skills[sk]) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+
+        const maxiSec = document.getElementById('maxiSection');
+        const warn = document.getElementById('skillGateWarning');
+
+        if (allSkillsDone && miniPassed) {
+            maxiSec.style.opacity = '1';
+            maxiSec.style.pointerEvents = 'auto';
+            warn.innerText = '✅ Prerequisites completed. Ready for Maxi Challenge evaluation.';
+            warn.style.color = '#22C55E';
+        } else {
+            maxiSec.style.opacity = '0.5';
+            maxiSec.style.pointerEvents = 'none';
+            if (!allSkillsDone) {
+                warn.innerText = '⚠️ All 5 skills must be checked first.';
+            } else {
+                warn.innerText = '⚠️ Mini-challenge must be passed (≥ 80%) before taking Maxi-challenge.';
+            }
+            warn.style.color = '#F59E0B';
+        }
+
+        checkCompletionState();
+    }
+
+    function getStageMessage(score) {
+        if (score === null || isNaN(score)) return "";
+        if (score <= 20) return "Status: ⚠️ Discovering stage, let's review more!";
+        if (score <= 50) return "Status: ⚠️ Exploring stage, let's practice more";
+        if (score <= 79) return "Status: ⚠️ Practice stage - you're almost there!";
+        return "Status: ✅ Autonome (Pass)";
+    }
+
+    function updateMiniScore(val) {
+        const node = nodesData[activeNodeId];
+        node.miniScore = val !== "" ? parseInt(val) : null;
+        updateSkillTogglesUI();
+        saveToLocalStorage();
+    }
+
+    function updateMaxiScore(val) {
+        const node = nodesData[activeNodeId];
+        node.maxiScore = val !== "" ? parseInt(val) : null;
+        checkCompletionState();
+        saveToLocalStorage();
+    }
+
+    function checkCompletionState() {
+        const node = nodesData[activeNodeId];
+        const allSkillsDone = Object.values(node.skills).every(v => v === true);
+
+        document.getElementById('miniScoreStatus').innerText = getStageMessage(node.miniScore);
+        document.getElementById('maxiScoreStatus').innerText = getStageMessage(node.maxiScore);
+
+        const miniPass = !node.hasMiniChallenge || (node.miniScore !== null && node.miniScore >= 80);
+        const maxiPass = node.maxiScore !== null && node.maxiScore >= 80;
+
+        node.completed = allSkillsDone && miniPass && maxiPass;
+    }
+
+    // Initialize
+    initData();
+    recalculateAdjacency();
+    renderGrid();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Language Skill Matrix (216 Nodes)</title>
+    <title>Language Adventure Book</title>
     <style>
         :root {
             --bg-color: #12131C;
@@ -22,15 +22,15 @@
             --skill-l: #8B5CF6;
 
             /* CEFR Level Cluster Backgrounds */
-            --lvl-a1-bg: rgba(59, 130, 246, 0.22); /* Light Blue */
+            --lvl-a1-bg: rgba(59, 130, 246, 0.22);
             --lvl-a1-border: rgba(96, 165, 250, 0.4);
-            --lvl-a2-bg: rgba(34, 197, 94, 0.22); /* Light Green */
+            --lvl-a2-bg: rgba(34, 197, 94, 0.22);
             --lvl-a2-border: rgba(74, 222, 128, 0.4);
-            --lvl-b1-bg: rgba(168, 85, 247, 0.22); /* Light Purple */
+            --lvl-b1-bg: rgba(168, 85, 247, 0.22);
             --lvl-b1-border: rgba(192, 132, 252, 0.4);
-            --lvl-b2-bg: rgba(159, 18, 57, 0.35); /* Crimson */
+            --lvl-b2-bg: rgba(159, 18, 57, 0.35);
             --lvl-b2-border: rgba(244, 63, 94, 0.5);
-            --lvl-c1-bg: rgba(234, 179, 8, 0.25); /* Professional Warm Yellow/Gold */
+            --lvl-c1-bg: rgba(234, 179, 8, 0.25);
             --lvl-c1-border: rgba(250, 204, 21, 0.5);
         }
 
@@ -58,9 +58,133 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        h1 { margin: 0; font-size: 1.5rem; color: #F1F5F9; }
+        h1 { margin: 0; font-size: 1.5rem; color: #F1F5F9; letter-spacing: 0.5px; }
+
+        /* Sliding Pill Switch UI */
+        .lang-switch {
+            position: relative;
+            width: 90px;
+            height: 32px;
+            background: #181926;
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            padding: 2px;
+            box-sizing: border-box;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .lang-switch-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 40px;
+            height: 24px;
+            background: #F8FAFC;
+            border-radius: 16px;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .lang-switch.fr .lang-switch-slider {
+            transform: translateX(42px);
+        }
+
+        .lang-option {
+            flex: 1;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 800;
+            z-index: 2;
+            transition: color 0.25s;
+            color: #64748B;
+        }
+
+        .lang-switch.en .opt-en { color: #0F172A; }
+        .lang-switch.fr .opt-fr { color: #0F172A; }
+
+        /* Search Bar Styling */
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 280px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            background: #181926;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: #FFF;
+            font-size: 0.85rem;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Thermometer Progress Bar Widget */
+        .thermometer-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #181926;
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--card-border);
+        }
+
+        .thermometer-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .thermo-bulb {
+            width: 20px;
+            height: 20px;
+            background: #EF4444;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+            z-index: 2;
+            margin-right: -4px;
+        }
+
+        .thermo-tube {
+            width: 140px;
+            height: 12px;
+            background: #0F172A;
+            border-radius: 0 10px 10px 0;
+            border: 1px solid #334155;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .thermo-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #EF4444, #F59E0B, #3B82F6, #22C55E);
+            transition: width 0.5s ease-in-out;
+            box-shadow: 0 0 6px rgba(34, 197, 94, 0.8);
+        }
+
+        .thermo-text {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #F8FAFC;
+        }
 
         .legend-row {
             display: flex;
@@ -84,7 +208,7 @@
             font-weight: 600;
         }
 
-        /* Horizontal Scrolling Grid Wrapper */
+        /* Grid Layout */
         .grid-container {
             width: 100%;
             max-width: 1800px;
@@ -104,7 +228,7 @@
             width: max-content;
         }
 
-        /* Card Styles */
+        /* Node Box Styles */
         .node-box {
             border-radius: 6px;
             padding: 5px;
@@ -138,6 +262,12 @@
             background: var(--completed-bg) !important;
             border-color: var(--completed-border) !important;
             box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+
+        .node-box.search-dimmed {
+            opacity: 0.15 !important;
+            filter: grayscale(0.8);
+            pointer-events: none;
         }
 
         .skills-header {
@@ -185,10 +315,7 @@
             font-weight: 700;
         }
 
-        .level-tag {
-            opacity: 0.7;
-            color: #CBD5E1;
-        }
+        .level-tag { opacity: 0.7; color: #CBD5E1; }
 
         .score-stack {
             display: flex;
@@ -236,9 +363,7 @@
         .modal-section { margin-bottom: 20px; }
         .modal-section h3 { margin: 0 0 10px 0; font-size: 1rem; color: #60A5FA; }
 
-        .skill-toggle-group {
-            display: flex; gap: 10px; margin-bottom: 15px;
-        }
+        .skill-toggle-group { display: flex; gap: 10px; margin-bottom: 15px; }
 
         .skill-toggle {
             padding: 8px 12px;
@@ -271,56 +396,107 @@
             color: #fff; padding: 8px; border-radius: 4px; box-sizing: border-box;
             font-family: inherit;
         }
+
+        /* Auto-Hyperlinked Links Preview Container */
+        .link-preview-box {
+            margin-top: 6px;
+            font-size: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #1E293B;
+            border: 1px solid #3B82F6;
+            color: #60A5FA;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .link-btn:hover {
+            background: #2563EB;
+            color: #FFF;
+        }
     </style>
 </head>
 <body>
 
 <header>
     <div class="header-top">
-        <h1>English Language Matrix - your guide to language proficiency</h1>
+        <h1 id="lbl-app-title">Language Adventure Book</h1>
+        
+        <!-- Sliding Switch Toggle -->
+        <div class="lang-switch en" id="langSwitch" onclick="toggleLanguage()">
+            <div class="lang-switch-slider"></div>
+            <span class="lang-option opt-en">EN</span>
+            <span class="lang-option opt-fr">FR</span>
+        </div>
+
+        <!-- Live Search Bar -->
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search grammar, topics, or titles..." oninput="filterGrid(this.value)">
+        </div>
+
+        <!-- Thermometer Progress Gauge -->
+        <div class="thermometer-container">
+            <div class="thermometer-wrapper">
+                <div class="thermo-bulb"></div>
+                <div class="thermo-tube">
+                    <div class="thermo-fill" id="thermoFill"></div>
+                </div>
+            </div>
+            <div class="thermo-text" id="thermoText">0 / 216 (0%)</div>
+        </div>
     </div>
     
     <div class="legend-row">
-        <strong style="color:#FFF;">Clusters:</strong>
+        <strong style="color:#FFF;" id="lbl-legend-clusters">Clusters:</strong>
         <div class="legend-item">
             <div class="legend-box" style="background:var(--lvl-a1-bg); border-color:var(--lvl-a1-border)"></div>
             <div>
-                A1 (Light Blue)
+                <span id="lbl-cluster-a1">A1 (Light Blue)</span>
                 <span id="stat-A1" class="cluster-stat">0/0 (0%)</span>
             </div>
         </div>
         <div class="legend-item">
             <div class="legend-box" style="background:var(--lvl-a2-bg); border-color:var(--lvl-a2-border)"></div>
             <div>
-                A2 (Light Green)
+                <span id="lbl-cluster-a2">A2 (Light Green)</span>
                 <span id="stat-A2" class="cluster-stat">0/0 (0%)</span>
             </div>
         </div>
         <div class="legend-item">
             <div class="legend-box" style="background:var(--lvl-b1-bg); border-color:var(--lvl-b1-border)"></div>
             <div>
-                B1 (Light Purple)
+                <span id="lbl-cluster-b1">B1 (Light Purple)</span>
                 <span id="stat-B1" class="cluster-stat">0/0 (0%)</span>
             </div>
         </div>
         <div class="legend-item">
             <div class="legend-box" style="background:var(--lvl-b2-bg); border-color:var(--lvl-b2-border)"></div>
             <div>
-                B2 (Crimson)
+                <span id="lbl-cluster-b2">B2 (Crimson)</span>
                 <span id="stat-B2" class="cluster-stat">0/0 (0%)</span>
             </div>
         </div>
         <div class="legend-item">
             <div class="legend-box" style="background:var(--lvl-c1-bg); border-color:var(--lvl-c1-border)"></div>
             <div>
-                C1 (Warm Gold)
+                <span id="lbl-cluster-c1">C1 (Warm Gold)</span>
                 <span id="stat-C1" class="cluster-stat">0/0 (0%)</span>
             </div>
         </div>
         <span style="margin: 0 10px; color:#334155;">|</span>
-        <strong style="color:#FFF;">States:</strong>
-        <div class="legend-item"><div class="legend-box" style="background:var(--suggested-border); border-color:#FFF"></div> A recommended learning path</div>
-        <div class="legend-item"><div class="legend-box" style="background:var(--completed-bg); border-color:var(--completed-border)"></div> Completed</div>
+        <strong style="color:#FFF;" id="lbl-legend-states">States:</strong>
+        <div class="legend-item"><div class="legend-box" style="background:var(--suggested-border); border-color:#FFF"></div> <span id="lbl-state-path">A recommended learning path</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:var(--completed-bg); border-color:var(--completed-border)"></div> <span id="lbl-state-completed">Completed</span></div>
     </div>
 </header>
 
@@ -336,13 +512,13 @@
         <h2 id="modalTitle" style="margin-top:0;">Language Block Details</h2>
         
         <div class="modal-section">
-            <h3>1. Block Identity & Goals (Editable)</h3>
-            <input type="text" id="customTitleInput" placeholder="Custom Block Name (e.g., Simple Present & Daily Routines)" onchange="saveCustomTitle(this.value)" style="margin-bottom: 8px;">
-            <textarea id="modalGoalsInput" rows="3" placeholder="Enter target language points/goals for this block..." onchange="saveGoals(this.value)"></textarea>
+            <h3 id="lbl-sec1-title">1. Block Identity & Goals (Editable)</h3>
+            <input type="text" id="customTitleInput" placeholder="Custom Block Name..." onchange="saveCustomTitle(this.value)" style="margin-bottom: 8px;">
+            <textarea id="modalGoalsInput" rows="3" placeholder="Enter target language points/goals..." onchange="saveGoals(this.value)"></textarea>
         </div>
 
         <div class="modal-section">
-            <h3>2. Skills completed</h3>
+            <h3 id="lbl-sec2-title">2. Skills completed</h3>
             <div class="skill-toggle-group">
                 <button class="skill-toggle" data-skill="S" onclick="toggleSkill('S')">S (Speaking)</button>
                 <button class="skill-toggle" data-skill="W" onclick="toggleSkill('W')">W (Writing)</button>
@@ -356,64 +532,67 @@
         <div class="modal-section" style="border-top: 1px solid #2A2D40; padding-top: 15px;">
             <label style="font-size: 0.9rem; font-weight: 600; color: #F59E0B; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                 <input type="checkbox" id="hasMiniCheckbox" onchange="toggleMiniChallenge(this.checked)">
-                <span>Require Mini-Challenge for this block?</span>
+                <span id="lbl-require-mini">Require Mini-Challenge for this block?</span>
             </label>
         </div>
 
         <!-- Mini-Challenge Section -->
         <div class="modal-section" id="miniSection" style="display: none; background: #161B26; padding: 15px; border-radius: 8px; border: 1px solid #F59E0B;">
-            <h3 style="color: #F59E0B; margin-top: 0;">3a. Mini-Défi : Évaluation (Score requis : ≥ 80%)</h3>
+            <h3 style="color: #F59E0B; margin-top: 0;" id="lbl-sec3a-title">3a. Mini-Challenge Evaluation (Score needed: ≥ 80%)</h3>
             
-            <input type="text" id="miniTitleInput" placeholder="Titre du mini-défi (ex: Test rapide de grammaire)" onchange="saveMiniTitle(this.value)" style="margin-bottom: 8px;">
-            <textarea id="miniDescInput" rows="2" placeholder="Instructions/description du mini-défi..." onchange="saveMiniDesc(this.value)" style="margin-bottom: 10px;"></textarea>
+            <input type="text" id="miniTitleInput" placeholder="Mini-Challenge Title..." onchange="saveMiniTitle(this.value)" style="margin-bottom: 8px;">
+            <textarea id="miniDescInput" rows="2" placeholder="Mini-challenge instructions..." onchange="saveMiniDesc(this.value)" style="margin-bottom: 10px;"></textarea>
 
             <table class="rubric-table">
                 <thead>
-                    <tr><th>Domaine d'évaluation</th><th>Indicateur de réussite</th></tr>
+                    <tr><th id="lbl-mini-col-domain">Domain</th><th id="lbl-mini-col-ind">Success Indicator</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>Précision & Ciblage</td><td>Démontre avec précision le point linguistique cible.</td></tr>
-                    <tr><td>Application pratique</td><td>Applique correctement la structure lors de contrôles rapides.</td></tr>
+                    <tr><td id="lbl-mini-r1-domain">Précision & Ciblage</td><td id="lbl-mini-r1-ind">Démontre avec précision le point linguistique cible.</td></tr>
+                    <tr><td id="lbl-mini-r2-domain">Application pratique</td><td id="lbl-mini-r2-ind">Applique correctement la structure lors de contrôles rapides.</td></tr>
                 </tbody>
             </table>
 
             <div style="margin-top: 12px;">
-                <label style="font-size:0.85rem; font-weight:600;">Score du Mini-Défi (0-100%):</label>
+                <label style="font-size:0.85rem; font-weight:600;" id="lbl-mini-score-tag">Mini-Challenge Score (0-100%):</label>
                 <input type="number" id="miniScoreInput" min="0" max="100" placeholder="e.g., 85" onchange="updateMiniScore(this.value)">
                 <span id="miniScoreStatus" style="font-size:0.8rem; font-weight:bold; margin-top:4px; display:block;"></span>
             </div>
 
-            <textarea id="miniFeedbackInput" rows="2" style="margin-top:8px;" placeholder="Feedback du mini-défi..." onchange="saveMiniFeedback(this.value)"></textarea>
+            <textarea id="miniFeedbackInput" rows="2" style="margin-top:8px;" placeholder="Mini-challenge feedback..." onchange="saveMiniFeedback(this.value)"></textarea>
         </div>
 
         <!-- Maxi Challenge Section -->
         <div class="modal-section" id="maxiSection" style="opacity: 0.5; pointer-events: none;">
-            <h3>3b. Maxi Challenge Evaluation (Score needed: ≥ 80%)</h3>
+            <h3 id="lbl-sec3b-title">3b. Maxi Challenge Evaluation (Score needed: ≥ 80%)</h3>
             
             <table class="rubric-table">
                 <thead>
-                    <tr><th>Domaine d'évolution</th><th>Indicateur de réussite</th></tr>
+                    <tr><th id="lbl-maxi-col-domain">Development Area</th><th id="lbl-maxi-col-ind">Success Indicator</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>Objectifs métier / vie</td><td>Mobilise le lexique avec créativité.</td></tr>
-                    <tr><td>Aisance linguistique</td><td>S'exprime avec aisance, flux maintenu.</td></tr>
-                    <tr><td>Interaction</td><td>Réagit de manière spontanée aux imprévus.</td></tr>
-                    <tr><td>Autonomie & outils</td><td>Mobilise ses ressources pour s'auto-corriger.</td></tr>
-                    <tr><td>Posture réflexive</td><td>Analyse ses forces/difficultés et planifie la suite.</td></tr>
+                    <tr><td id="lbl-maxi-r1-domain">Objectifs métier / vie</td><td id="lbl-maxi-r1-ind">Mobilise le lexique avec créativité.</td></tr>
+                    <tr><td id="lbl-maxi-r2-domain">Aisance linguistique</td><td id="lbl-maxi-r2-ind">S'exprime avec aisance, flux maintenu.</td></tr>
+                    <tr><td id="lbl-maxi-r3-domain">Interaction</td><td id="lbl-maxi-r3-ind">Réagit de manière spontanée aux imprévus.</td></tr>
+                    <tr><td id="lbl-maxi-r4-domain">Autonomie & outils</td><td id="lbl-maxi-r4-ind">Mobilise ses ressources pour s'auto-corriger.</td></tr>
+                    <tr><td id="lbl-maxi-r5-domain">Posture réflexive</td><td id="lbl-maxi-r5-ind">Analyse ses forces/difficultés et planifie la suite.</td></tr>
                 </tbody>
             </table>
 
             <div style="margin-top: 15px;">
-                <label style="font-size:0.85rem; font-weight:600;">Maxi Challenge Score (0-100%):</label>
+                <label style="font-size:0.85rem; font-weight:600;" id="lbl-maxi-score-tag">Maxi Challenge Score (0-100%):</label>
                 <input type="number" id="maxiScoreInput" min="0" max="100" placeholder="e.g., 85" onchange="updateMaxiScore(this.value)">
                 <span id="maxiScoreStatus" style="font-size:0.8rem; font-weight:bold; margin-top:4px; display:block;"></span>
             </div>
         </div>
 
         <div class="modal-section">
-            <h3>4. Feedback & Practice resources</h3>
+            <h3 id="lbl-sec4-title">4. Feedback & Practice resources</h3>
             <textarea id="feedbackInput" rows="3" placeholder="Trainer feedback..." onchange="saveFeedback(this.value)"></textarea>
-            <textarea id="resourcesInput" rows="2" style="margin-top:8px;" placeholder="Practice links or recommendations..." onchange="saveResources(this.value)"></textarea>
+            <textarea id="resourcesInput" rows="2" style="margin-top:8px;" placeholder="Paste links or resources..." oninput="renderAutoLinks()"></textarea>
+            
+            <!-- Clickable Link Preview Container -->
+            <div id="linkPreviewBox" class="link-preview-box"></div>
         </div>
     </div>
 </div>
@@ -423,6 +602,193 @@
     const COLS = 24;
     const TOTAL_NODES = ROWS * COLS;
     const STORAGE_KEY = 'matrix_student_data_' + window.location.pathname;
+
+    let currentLang = localStorage.getItem('matrix_lang_pref') || 'en';
+
+    const translations = {
+        en: {
+            appTitle: "Language Adventure Book",
+            searchPlaceholder: "🔍 Search grammar, topics, or titles...",
+            clusters: "Clusters:",
+            states: "States:",
+            path: "A recommended learning path",
+            completed: "Completed",
+            a1: "A1 (Light Blue)",
+            a2: "A2 (Light Green)",
+            b1: "B1 (Light Purple)",
+            b2: "B2 (Crimson)",
+            c1: "C1 (Warm Gold)",
+            sec1Title: "1. Block Identity & Goals (Editable)",
+            customTitlePlaceholder: "Custom Block Name (e.g., Simple Present & Routines)",
+            goalsPlaceholder: "Enter target language points/goals for this block...",
+            sec2Title: "2. Skills completed",
+            requireMini: "Require Mini-Challenge for this block?",
+            sec3aTitle: "3a. Mini-Challenge Evaluation (Score needed: ≥ 80%)",
+            miniTitlePlaceholder: "Mini-Challenge Title (e.g., Quick Grammar Check)",
+            miniDescPlaceholder: "Mini-challenge instructions/description...",
+            miniScoreLabel: "Mini-Challenge Score (0-100%):",
+            miniFeedbackPlaceholder: "Mini-challenge feedback...",
+            miniDomainCol: "Evaluation Domain",
+            miniIndCol: "Success Indicator",
+            miniR1Domain: "Accuracy & Focus",
+            miniR1Ind: "Accurately demonstrates the key target language point.",
+            miniR2Domain: "Practical Application",
+            miniR2Ind: "Applies structure correctly during quick checks.",
+            sec3bTitle: "3b. Maxi Challenge Evaluation (Score needed: ≥ 80%)",
+            maxiScoreLabel: "Maxi Challenge Score (0-100%):",
+            maxiDomainCol: "Development Area",
+            maxiIndCol: "Success Indicator",
+            maxiR1Domain: "Career / Life Objectives",
+            maxiR1Ind: "Mobilizes vocabulary and language functions creatively for the project.",
+            maxiR2Domain: "Linguistic Fluency",
+            maxiR2Ind: "Expresses self with growing ease, maintaining communication flow.",
+            maxiR3Domain: "Interaction",
+            maxiR3Ind: "Reacts authentically to unexpected situations spontaneously.",
+            maxiR4Domain: "Autonomy & Tools",
+            maxiR4Ind: "Strategically uses resources to self-correct in real time.",
+            maxiR5Domain: "Reflective Stance",
+            maxiR5Ind: "Analyzes strengths/difficulties and plans future learning steps.",
+            sec4Title: "4. Feedback & Practice resources",
+            feedbackPlaceholder: "Trainer feedback...",
+            resourcesPlaceholder: "Paste links or resources (e.g. https://quizlet.com)...",
+            openResource: "🔗 Open Resource",
+            skillGateReady: "✅ Prerequisites completed. Ready for Maxi Challenge evaluation.",
+            skillGateNeedSkills: "⚠️ All 5 skills must be checked first.",
+            skillGateNeedMini: "⚠️ Mini-challenge must be passed (≥ 80%) before taking Maxi-challenge.",
+            statusDiscovering: "Status: ⚠️ Discovering stage, let's review more!",
+            statusExploring: "Status: ⚠️ Exploring stage, let's practice more",
+            statusPractice: "Status: ⚠️ Practice stage - you're almost there!",
+            statusAutonome: "Status: ✅ Autonomous (Pass)",
+            blockDefault: "Block"
+        },
+        fr: {
+            appTitle: "Livre d'Aventure Linguistique",
+            searchPlaceholder: "🔍 Rechercher de la grammaire, des sujets...",
+            clusters: "Groupes :",
+            states: "États :",
+            path: "Un parcours d'apprentissage recommandé",
+            completed: "Terminé",
+            a1: "A1 (Bleu clair)",
+            a2: "A2 (Vert clair)",
+            b1: "B1 (Violet clair)",
+            b2: "B2 (Cramoisi)",
+            c1: "C1 (Or chaud)",
+            sec1Title: "1. Identité et objectifs du bloc (Modifiable)",
+            customTitlePlaceholder: "Nom personnalisé du bloc (ex: Présent simple & routines)",
+            goalsPlaceholder: "Saisissez les objectifs/points linguistiques de ce bloc...",
+            sec2Title: "2. Compétences validées",
+            requireMini: "Exiger un mini-défi pour ce bloc ?",
+            sec3aTitle: "3a. Mini-Défi : Évaluation (Score requis : ≥ 80%)",
+            miniTitlePlaceholder: "Titre du mini-défi (ex: Test rapide de grammaire)",
+            miniDescPlaceholder: "Instructions/description du mini-défi...",
+            miniScoreLabel: "Score du Mini-Défi (0-100%) :",
+            miniFeedbackPlaceholder: "Feedback du mini-défi...",
+            miniDomainCol: "Domaine d'évaluation",
+            miniIndCol: "Indicateur de réussite",
+            miniR1Domain: "Précision & Ciblage",
+            miniR1Ind: "Démontre avec précision le point linguistique cible.",
+            miniR2Domain: "Application pratique",
+            miniR2Ind: "Applique correctement la structure lors de contrôles rapides.",
+            sec3bTitle: "3b. Évaluation du Maxi Challenge (Score requis : ≥ 80%)",
+            maxiScoreLabel: "Score du Maxi Challenge (0-100%) :",
+            maxiDomainCol: "Domaine d'évolution",
+            maxiIndCol: "Indicateur de réussite",
+            maxiR1Domain: "Objectifs métier / vie",
+            maxiR1Ind: "Mobilise le lexique et les fonctions langagières avec créativité.",
+            maxiR2Domain: "Aisance linguistique",
+            maxiR2Ind: "S'exprime avec une aisance croissante, flux maintenu.",
+            maxiR3Domain: "Interaction",
+            maxiR3Ind: "Réagit de manière authentique et spontanée aux imprévus.",
+            maxiR4Domain: "Autonomie & outils",
+            maxiR4Ind: "Mobilise ses ressources pour s'auto-corriger en temps réel.",
+            maxiR5Domain: "Posture réflexive",
+            maxiR5Ind: "Analyse ses forces/difficultés et planifie la suite.",
+            sec4Title: "4. Commentaires et ressources d'entraînement",
+            feedbackPlaceholder: "Commentaires du formateur...",
+            resourcesPlaceholder: "Collez des liens ou ressources (ex: https://quizlet.com)...",
+            openResource: "🔗 Ouvrir la ressource",
+            skillGateReady: "✅ Prérequis validés. Prêt pour l'évaluation du Maxi Challenge.",
+            skillGateNeedSkills: "⚠️ Les 5 compétences doivent d'abord être cochées.",
+            skillGateNeedMini: "⚠️ Le mini-défi doit être réussi (≥ 80%) avant de passer le maxi-défi.",
+            statusDiscovering: "Statut : ⚠️ Phase de découverte, révisons encore !",
+            statusExploring: "Statut : ⚠️ Phase d'exploration, pratiquons davantage",
+            statusPractice: "Statut : ⚠️ Phase de pratique - vous y êtes presque !",
+            statusAutonome: "Statut : ✅ Autonome (Réussi)",
+            blockDefault: "Bloc"
+        }
+    };
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'fr' : 'en';
+        localStorage.setItem('matrix_lang_pref', currentLang);
+        applyLanguage();
+    }
+
+    function applyLanguage() {
+        const t = translations[currentLang];
+        const switchEl = document.getElementById('langSwitch');
+        
+        if (switchEl) {
+            switchEl.className = `lang-switch ${currentLang}`;
+        }
+
+        document.getElementById('lbl-app-title').innerText = t.appTitle;
+        document.getElementById('searchInput').placeholder = t.searchPlaceholder;
+        document.getElementById('lbl-legend-clusters').innerText = t.clusters;
+        document.getElementById('lbl-legend-states').innerText = t.states;
+        document.getElementById('lbl-state-path').innerText = t.path;
+        document.getElementById('lbl-state-completed').innerText = t.completed;
+
+        document.getElementById('lbl-cluster-a1').innerText = t.a1;
+        document.getElementById('lbl-cluster-a2').innerText = t.a2;
+        document.getElementById('lbl-cluster-b1').innerText = t.b1;
+        document.getElementById('lbl-cluster-b2').innerText = t.b2;
+        document.getElementById('lbl-cluster-c1').innerText = t.c1;
+
+        // Modal Labels
+        document.getElementById('lbl-sec1-title').innerText = t.sec1Title;
+        document.getElementById('customTitleInput').placeholder = t.customTitlePlaceholder;
+        document.getElementById('modalGoalsInput').placeholder = t.goalsPlaceholder;
+        document.getElementById('lbl-sec2-title').innerText = t.sec2Title;
+        document.getElementById('lbl-require-mini').innerText = t.requireMini;
+
+        document.getElementById('lbl-sec3a-title').innerText = t.sec3aTitle;
+        document.getElementById('miniTitleInput').placeholder = t.miniTitlePlaceholder;
+        document.getElementById('miniDescInput').placeholder = t.miniDescPlaceholder;
+        document.getElementById('lbl-mini-score-tag').innerText = t.miniScoreLabel;
+        document.getElementById('miniFeedbackInput').placeholder = t.miniFeedbackPlaceholder;
+
+        document.getElementById('lbl-mini-col-domain').innerText = t.miniDomainCol;
+        document.getElementById('lbl-mini-col-ind').innerText = t.miniIndCol;
+        document.getElementById('lbl-mini-r1-domain').innerText = t.miniR1Domain;
+        document.getElementById('lbl-mini-r1-ind').innerText = t.miniR1Ind;
+        document.getElementById('lbl-mini-r2-domain').innerText = t.miniR2Domain;
+        document.getElementById('lbl-mini-r2-ind').innerText = t.miniR2Ind;
+
+        document.getElementById('lbl-sec3b-title').innerText = t.sec3bTitle;
+        document.getElementById('lbl-maxi-score-tag').innerText = t.maxiScoreLabel;
+        document.getElementById('lbl-maxi-col-domain').innerText = t.maxiDomainCol;
+        document.getElementById('lbl-maxi-col-ind').innerText = t.maxiIndCol;
+        document.getElementById('lbl-maxi-r1-domain').innerText = t.maxiR1Domain;
+        document.getElementById('lbl-maxi-r1-ind').innerText = t.maxiR1Ind;
+        document.getElementById('lbl-maxi-r2-domain').innerText = t.maxiR2Domain;
+        document.getElementById('lbl-maxi-r2-ind').innerText = t.maxiR2Ind;
+        document.getElementById('lbl-maxi-r3-domain').innerText = t.maxiR3Domain;
+        document.getElementById('lbl-maxi-r3-ind').innerText = t.maxiR3Ind;
+        document.getElementById('lbl-maxi-r4-domain').innerText = t.maxiR4Domain;
+        document.getElementById('lbl-maxi-r4-ind').innerText = t.maxiR4Ind;
+        document.getElementById('lbl-maxi-r5-domain').innerText = t.maxiR5Domain;
+        document.getElementById('lbl-maxi-r5-ind').innerText = t.maxiR5Ind;
+
+        document.getElementById('lbl-sec4-title').innerText = t.sec4Title;
+        document.getElementById('feedbackInput').placeholder = t.feedbackPlaceholder;
+        document.getElementById('resourcesInput').placeholder = t.resourcesPlaceholder;
+
+        if (activeNodeId !== null) {
+            updateSkillTogglesUI();
+            renderAutoLinks();
+        }
+    }
 
     function getClusterLevel(r, c) {
         let offset = Math.sin(r * 0.7) * 1.2;
@@ -484,6 +850,19 @@
         }
     }
 
+    /* Thermometer & Overall Matrix Stats Update */
+    function updateThermometer() {
+        const completedCount = nodesData.filter(n => n.completed).length;
+        const pct = Math.round((completedCount / TOTAL_NODES) * 100);
+
+        const fillEl = document.getElementById('thermoFill');
+        const textEl = document.getElementById('thermoText');
+
+        if (fillEl) fillEl.style.width = `${pct}%`;
+        if (textEl) textEl.innerText = `${completedCount} / ${TOTAL_NODES} (${pct}%)`;
+    }
+
+    /* Cluster Stats Update */
     function updateClusterStats() {
         const levels = ['A1', 'A2', 'B1', 'B2', 'C1'];
         const stats = {
@@ -512,12 +891,71 @@
         });
     }
 
+    /* Interactive Live Search Filter */
+    function filterGrid(query) {
+        const term = query.trim().toLowerCase();
+        
+        nodesData.forEach(node => {
+            const box = document.getElementById(`node-box-${node.id}`);
+            if (!box) return;
+
+            if (!term) {
+                box.classList.remove('search-dimmed');
+                return;
+            }
+
+            const matchTitle = node.customTitle && node.customTitle.toLowerCase().includes(term);
+            const matchGoals = node.goals && node.goals.toLowerCase().includes(term);
+            const matchLevel = node.level && node.level.toLowerCase().includes(term);
+            const matchMini = node.miniTitle && node.miniTitle.toLowerCase().includes(term);
+
+            if (matchTitle || matchGoals || matchLevel || matchMini) {
+                box.classList.remove('search-dimmed');
+            } else {
+                box.classList.add('search-dimmed');
+            }
+        });
+    }
+
+    /* Safe Auto-detect URLs and render Clickable Hyperlinks */
+    function renderAutoLinks() {
+        const resEl = document.getElementById('resourcesInput');
+        const fbEl = document.getElementById('feedbackInput');
+        const previewContainer = document.getElementById('linkPreviewBox');
+
+        if (!resEl || !fbEl || !previewContainer) return;
+
+        const resText = resEl.value || "";
+        const fbText = fbEl.value || "";
+
+        if (activeNodeId !== null && nodesData[activeNodeId]) {
+            nodesData[activeNodeId].resources = resText;
+        }
+
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const foundUrls = [...(resText.match(urlRegex) || []), ...(fbText.match(urlRegex) || [])];
+
+        previewContainer.innerHTML = '';
+        if (foundUrls.length > 0) {
+            foundUrls.forEach((url, idx) => {
+                const linkAnchor = document.createElement('a');
+                linkAnchor.className = 'link-btn';
+                linkAnchor.href = url;
+                linkAnchor.target = '_blank';
+                linkAnchor.rel = 'noopener noreferrer';
+                linkAnchor.innerHTML = `${translations[currentLang].openResource} ${idx + 1}`;
+                previewContainer.appendChild(linkAnchor);
+            });
+        }
+    }
+
     function renderGrid() {
         const gridContainer = document.getElementById('matrixGrid');
         gridContainer.innerHTML = '';
 
         nodesData.forEach(node => {
             const box = document.createElement('div');
+            box.id = `node-box-${node.id}`;
             box.className = `node-box ${node.level} ${node.completed ? 'completed' : (node.suggested ? 'suggested' : '')}`;
             box.onclick = () => openModal(node.id);
 
@@ -572,6 +1010,10 @@
         });
 
         updateClusterStats();
+        updateThermometer();
+
+        const currentSearch = document.getElementById('searchInput')?.value;
+        if (currentSearch) filterGrid(currentSearch);
     }
 
     function recalculateAdjacency() {
@@ -603,10 +1045,11 @@
     function openModal(id) {
         activeNodeId = id;
         const node = nodesData[id];
+        const t = translations[currentLang];
         
         document.getElementById('modalTitle').innerText = node.customTitle 
             ? `${node.customTitle} (${node.level})` 
-            : `Block ${id + 1} (${node.level} Cluster)`;
+            : `${t.blockDefault} ${id + 1} (${node.level})`;
 
         document.getElementById('customTitleInput').value = node.customTitle || '';
         document.getElementById('modalGoalsInput').value = node.goals || '';
@@ -623,6 +1066,8 @@
 
         toggleMiniChallenge(node.hasMiniChallenge);
         updateSkillTogglesUI();
+        renderAutoLinks();
+
         document.getElementById('nodeModal').style.display = 'flex';
     }
 
@@ -632,25 +1077,29 @@
 
     function closeModal() {
         document.getElementById('nodeModal').style.display = 'none';
+        activeNodeId = null;
         saveToLocalStorage();
         recalculateAdjacency();
         renderGrid();
     }
 
     function saveCustomTitle(val) { 
+        if (activeNodeId === null) return;
         nodesData[activeNodeId].customTitle = val; 
         const node = nodesData[activeNodeId];
+        const t = translations[currentLang];
         document.getElementById('modalTitle').innerText = val 
             ? `${val} (${node.level})` 
-            : `Block ${node.id + 1} (${node.level} Cluster)`;
+            : `${t.blockDefault} ${node.id + 1} (${node.level})`;
         saveToLocalStorage();
     }
 
-    function saveGoals(val) { nodesData[activeNodeId].goals = val; saveToLocalStorage(); }
-    function saveFeedback(val) { nodesData[activeNodeId].feedback = val; saveToLocalStorage(); }
-    function saveResources(val) { nodesData[activeNodeId].resources = val; saveToLocalStorage(); }
+    function saveGoals(val) { if (activeNodeId !== null) { nodesData[activeNodeId].goals = val; saveToLocalStorage(); } }
+    function saveFeedback(val) { if (activeNodeId !== null) { nodesData[activeNodeId].feedback = val; renderAutoLinks(); saveToLocalStorage(); } }
+    function saveResources(val) { if (activeNodeId !== null) { nodesData[activeNodeId].resources = val; saveToLocalStorage(); } }
 
     function toggleMiniChallenge(checked) {
+        if (activeNodeId === null) return;
         const node = nodesData[activeNodeId];
         node.hasMiniChallenge = checked;
         document.getElementById('miniSection').style.display = checked ? 'block' : 'none';
@@ -658,11 +1107,12 @@
         saveToLocalStorage();
     }
 
-    function saveMiniTitle(val) { nodesData[activeNodeId].miniTitle = val; saveToLocalStorage(); }
-    function saveMiniDesc(val) { nodesData[activeNodeId].miniDesc = val; saveToLocalStorage(); }
-    function saveMiniFeedback(val) { nodesData[activeNodeId].miniFeedback = val; saveToLocalStorage(); }
+    function saveMiniTitle(val) { if (activeNodeId !== null) { nodesData[activeNodeId].miniTitle = val; saveToLocalStorage(); } }
+    function saveMiniDesc(val) { if (activeNodeId !== null) { nodesData[activeNodeId].miniDesc = val; saveToLocalStorage(); } }
+    function saveMiniFeedback(val) { if (activeNodeId !== null) { nodesData[activeNodeId].miniFeedback = val; saveToLocalStorage(); } }
 
     function toggleSkill(skillKey) {
+        if (activeNodeId === null) return;
         const node = nodesData[activeNodeId];
         node.skills[skillKey] = !node.skills[skillKey];
         updateSkillTogglesUI();
@@ -670,9 +1120,11 @@
     }
 
     function updateSkillTogglesUI() {
+        if (activeNodeId === null) return;
         const node = nodesData[activeNodeId];
         const allSkillsDone = Object.values(node.skills).every(v => v === true);
         const miniPassed = !node.hasMiniChallenge || (node.miniScore !== null && node.miniScore >= 80);
+        const t = translations[currentLang];
 
         document.querySelectorAll('.skill-toggle').forEach(btn => {
             const sk = btn.getAttribute('data-skill');
@@ -686,15 +1138,15 @@
         if (allSkillsDone && miniPassed) {
             maxiSec.style.opacity = '1';
             maxiSec.style.pointerEvents = 'auto';
-            warn.innerText = '✅ Prerequisites completed. Ready for Maxi Challenge evaluation.';
+            warn.innerText = t.skillGateReady;
             warn.style.color = '#22C55E';
         } else {
             maxiSec.style.opacity = '0.5';
             maxiSec.style.pointerEvents = 'none';
             if (!allSkillsDone) {
-                warn.innerText = '⚠️ All 5 skills must be checked first.';
+                warn.innerText = t.skillGateNeedSkills;
             } else {
-                warn.innerText = '⚠️ Mini-challenge must be passed (≥ 80%) before taking Maxi-challenge.';
+                warn.innerText = t.skillGateNeedMini;
             }
             warn.style.color = '#F59E0B';
         }
@@ -704,13 +1156,15 @@
 
     function getStageMessage(score) {
         if (score === null || isNaN(score)) return "";
-        if (score <= 20) return "Status: ⚠️ Discovering stage, let's review more!";
-        if (score <= 50) return "Status: ⚠️ Exploring stage, let's practice more";
-        if (score <= 79) return "Status: ⚠️ Practice stage - you're almost there!";
-        return "Status: ✅ Autonome (Pass)";
+        const t = translations[currentLang];
+        if (score <= 20) return t.statusDiscovering;
+        if (score <= 50) return t.statusExploring;
+        if (score <= 79) return t.statusPractice;
+        return t.statusAutonome;
     }
 
     function updateMiniScore(val) {
+        if (activeNodeId === null) return;
         const node = nodesData[activeNodeId];
         node.miniScore = val !== "" ? parseInt(val) : null;
         updateSkillTogglesUI();
@@ -718,6 +1172,7 @@
     }
 
     function updateMaxiScore(val) {
+        if (activeNodeId === null) return;
         const node = nodesData[activeNodeId];
         node.maxiScore = val !== "" ? parseInt(val) : null;
         checkCompletionState();
@@ -725,6 +1180,7 @@
     }
 
     function checkCompletionState() {
+        if (activeNodeId === null) return;
         const node = nodesData[activeNodeId];
         const allSkillsDone = Object.values(node.skills).every(v => v === true);
 
@@ -737,8 +1193,9 @@
         node.completed = allSkillsDone && miniPass && maxiPass;
     }
 
-    // Initialize
+    // Initialize Application safely
     initData();
+    applyLanguage();
     recalculateAdjacency();
     renderGrid();
 </script>

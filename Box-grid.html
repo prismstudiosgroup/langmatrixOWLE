@@ -75,7 +75,14 @@
         }
 
         .legend-item { display: flex; align-items: center; gap: 6px; }
-        .legend-box { width: 14px; height: 14px; border-radius: 3px; border: 1px solid; }
+        .legend-box { width: 14px; height: 14px; border-radius: 3px; border: 1px solid; flex-shrink: 0; }
+
+        .cluster-stat {
+            display: block;
+            font-size: 0.65rem;
+            color: #94A3B8;
+            font-weight: 600;
+        }
 
         /* Horizontal Scrolling Grid Wrapper */
         .grid-container {
@@ -275,14 +282,44 @@
     
     <div class="legend-row">
         <strong style="color:#FFF;">Clusters:</strong>
-        <div class="legend-item"><div class="legend-box" style="background:var(--lvl-a1-bg); border-color:var(--lvl-a1-border)"></div> A1 (Light Blue)</div>
-        <div class="legend-item"><div class="legend-box" style="background:var(--lvl-a2-bg); border-color:var(--lvl-a2-border)"></div> A2 (Light Green)</div>
-        <div class="legend-item"><div class="legend-box" style="background:var(--lvl-b1-bg); border-color:var(--lvl-b1-border)"></div> B1 (Light Purple)</div>
-        <div class="legend-item"><div class="legend-box" style="background:var(--lvl-b2-bg); border-color:var(--lvl-b2-border)"></div> B2 (Crimson)</div>
-        <div class="legend-item"><div class="legend-box" style="background:var(--lvl-c1-bg); border-color:var(--lvl-c1-border)"></div> C1 (Warm Gold)</div>
+        <div class="legend-item">
+            <div class="legend-box" style="background:var(--lvl-a1-bg); border-color:var(--lvl-a1-border)"></div>
+            <div>
+                A1 (Light Blue)
+                <span id="stat-A1" class="cluster-stat">0/0 (0%)</span>
+            </div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box" style="background:var(--lvl-a2-bg); border-color:var(--lvl-a2-border)"></div>
+            <div>
+                A2 (Light Green)
+                <span id="stat-A2" class="cluster-stat">0/0 (0%)</span>
+            </div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box" style="background:var(--lvl-b1-bg); border-color:var(--lvl-b1-border)"></div>
+            <div>
+                B1 (Light Purple)
+                <span id="stat-B1" class="cluster-stat">0/0 (0%)</span>
+            </div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box" style="background:var(--lvl-b2-bg); border-color:var(--lvl-b2-border)"></div>
+            <div>
+                B2 (Crimson)
+                <span id="stat-B2" class="cluster-stat">0/0 (0%)</span>
+            </div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box" style="background:var(--lvl-c1-bg); border-color:var(--lvl-c1-border)"></div>
+            <div>
+                C1 (Warm Gold)
+                <span id="stat-C1" class="cluster-stat">0/0 (0%)</span>
+            </div>
+        </div>
         <span style="margin: 0 10px; color:#334155;">|</span>
         <strong style="color:#FFF;">States:</strong>
-        <div class="legend-item"><div class="legend-box" style="background:var(--suggested-border); border-color:#FFF"></div> Possible Path</div>
+        <div class="legend-item"><div class="legend-box" style="background:var(--suggested-border); border-color:#FFF"></div> A recommended learning path</div>
         <div class="legend-item"><div class="legend-box" style="background:var(--completed-bg); border-color:var(--completed-border)"></div> Completed</div>
     </div>
 </header>
@@ -447,6 +484,34 @@
         }
     }
 
+    function updateClusterStats() {
+        const levels = ['A1', 'A2', 'B1', 'B2', 'C1'];
+        const stats = {
+            A1: { total: 0, completed: 0 },
+            A2: { total: 0, completed: 0 },
+            B1: { total: 0, completed: 0 },
+            B2: { total: 0, completed: 0 },
+            C1: { total: 0, completed: 0 }
+        };
+
+        nodesData.forEach(n => {
+            if (stats[n.level]) {
+                stats[n.level].total++;
+                if (n.completed) stats[n.level].completed++;
+            }
+        });
+
+        levels.forEach(lvl => {
+            const total = stats[lvl].total;
+            const done = stats[lvl].completed;
+            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+            const el = document.getElementById(`stat-${lvl}`);
+            if (el) {
+                el.innerText = `${done}/${total} (${pct}%)`;
+            }
+        });
+    }
+
     function renderGrid() {
         const gridContainer = document.getElementById('matrixGrid');
         gridContainer.innerHTML = '';
@@ -505,6 +570,8 @@
             box.appendChild(footer);
             gridContainer.appendChild(box);
         });
+
+        updateClusterStats();
     }
 
     function recalculateAdjacency() {

@@ -380,7 +380,7 @@
         @media print {
             body { background: #FFF !important; color: #000 !important; padding: 0 !important; margin: 0 !important; }
             header, .grid-container, .modal-overlay, .svg-overlay { display: none !important; }
-            #printContainer { display: block !important; width: 100% !important; }
+            #printContainer { display: block !important; width: 100% !important; position: relative !important; }
         }
     </style>
 </head>
@@ -752,6 +752,7 @@
         return hasSkills || hasMini || hasMaxi || hasTitle;
     }
 
+    /* Professional PDF Report with Centered Watermark */
     function triggerPrint() {
         const printEl = document.getElementById('printContainer');
         if (!printEl) return;
@@ -775,18 +776,23 @@
             : "<strong>Avertissement :</strong> Ce relevé de progression reflète une évaluation formative continue et ne constitue pas un score de test certifiant ni un substitut aux examens officiels (tels que le TOEIC, le DET ou l'IELTS). Prism Language Studio décline toute responsabilité en cas d'utilisation non conforme ou non autorisée de ce document.";
 
         let reportHtml = `
-            <div style="padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; color: #0F172A; max-width: 900px; margin: 0 auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0F172A; padding-bottom: 12px; margin-bottom: 15px;">
-                    <div>
+            <div style="position: relative; padding: 20px; font-family: 'Segoe UI', Arial, sans-serif; color: #0F172A; max-width: 900px; margin: 0 auto; min-height: 95vh;">
+                
+                <!-- Centered Subtle Logo Watermark -->
+                <div style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 600px; opacity: 0.08; pointer-events: none; z-index: 0; text-align: center;">
+                    <img src="logoWM.png" alt="Watermark" style="width: 100%; height: auto;" onerror="this.onerror=null; this.src='logo.png';">
+                </div>
+
+                <!-- Report Content Layer -->
+                <div style="position: relative; z-index: 1;">
+                    <div style="border-bottom: 2px solid #0F172A; padding-bottom: 12px; margin-bottom: 15px;">
                         <h1 style="margin: 0; font-size: 1.5rem; color: #0F172A;">${docTitle}</h1>
                         <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #475569;">${isEn ? 'Date' : 'Date'} : ${new Date().toLocaleDateString()}</p>
                     </div>
-                    <img src="logo.png" alt="Prism Language Studio" style="height: 50px; width: auto;" onerror="this.style.display='none'">
-                </div>
 
-                <p style="font-size: 0.85rem; color: #334155; line-height: 1.4; margin-bottom: 20px; background: #F8FAFC; padding: 10px; border-left: 3px solid #3B82F6;">
-                    ${introText}
-                </p>
+                    <p style="font-size: 0.85rem; color: #334155; line-height: 1.4; margin-bottom: 20px; background: rgba(248, 250, 252, 0.85); padding: 10px; border-left: 3px solid #3B82F6;">
+                        ${introText}
+                    </p>
         `;
 
         levels.forEach(lvl => {
@@ -795,7 +801,7 @@
                 activeCount += levelNodes.length;
                 reportHtml += `<h2 style="color: #1E293B; margin-top: 18px; margin-bottom: 8px; border-bottom: 1px solid #CBD5E1; padding-bottom: 3px; font-size: 1.15rem;">${lvl}</h2>`;
                 reportHtml += `
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 15px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 15px; background: rgba(255, 255, 255, 0.85);">
                         <thead>
                             <tr style="background: #F1F5F9; text-align: left; color: #1E293B;">
                                 <th style="padding: 6px 8px; border: 1px solid #94A3B8; width: 38%;">${colPoint}</th>
@@ -832,15 +838,16 @@
         }
 
         reportHtml += `
-            <div style="margin-top: 30px; border-top: 1px solid #CBD5E1; padding-top: 12px; font-size: 0.72rem; color: #64748B; line-height: 1.4;">
-                <p style="margin-bottom: 8px;">${disclaimerText}</p>
-                <div style="border-top: 1px dashed #E2E8F0; padding-top: 8px; text-align: center; color: #475569;">
-                    <strong>Brendan Geer — Prism Language Studio</strong><br>
-                    Organisme de formation (N° DA : 53351281735) | Certifié Qualiopi : Actions de formation (N° 690511-1)<br>
-                    SIRET : 93446678000012 | Code APE : 8559B | <a href="mailto:contact@prismlanguagestudio.com" style="color: #2563EB; text-decoration: none;">contact@prismlanguagestudio.com</a> | +33 6 18 97 58 30
+                    <div style="margin-top: 30px; border-top: 1px solid #CBD5E1; padding-top: 12px; font-size: 0.72rem; color: #64748B; line-height: 1.4;">
+                        <p style="margin-bottom: 8px;">${disclaimerText}</p>
+                        <div style="border-top: 1px dashed #E2E8F0; padding-top: 8px; text-align: center; color: #475569;">
+                            <strong>Brendan Geer — Prism Language Studio</strong><br>
+                            Organisme de formation (N° DA : 53351281735) | Certifié Qualiopi : Actions de formation (N° 690511-1)<br>
+                            SIRET : 93446678000012 | Code APE : 8559B | <a href="mailto:contact@prismlanguagestudio.com" style="color: #2563EB; text-decoration: none;">contact@prismlanguagestudio.com</a> | +33 6 18 97 58 30
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>`;
+            </div>`;
 
         printEl.innerHTML = reportHtml;
         window.print();
@@ -1291,7 +1298,6 @@
         return neighbors;
     }
 
-    /* Modal Rendering Logic: Editable vs Streamlined Read-Only */
     function openModal(id) {
         activeNodeId = id;
         const node = nodesData[id];
@@ -1301,7 +1307,6 @@
         const titleText = node.customTitle ? `${node.customTitle} (${node.level})` : `${t.blockDefault} ${id + 1} (${node.level})`;
 
         if (isTrainerUnlocked) {
-            // Unlocked Trainer Edit View
             container.innerHTML = `
                 <button class="close-btn" onclick="closeModal()">&times;</button>
                 <h2 id="modalTitle" style="margin-top:0;">${titleText}</h2>
@@ -1458,7 +1463,7 @@
             const foundUrls = [...((node.resources || '').match(urlRegex) || []), ...((node.feedback || '').match(urlRegex) || [])];
             let linksBtns = foundUrls.map((url, idx) => `<a class="link-btn" href="${url}" target="_blank" rel="noopener noreferrer">${t.openResource} ${idx + 1}</a>`).join(' ');
 
-            // Skill caution logic based on skills & mini-challenge completion
+            // Dynamic caution message accurately reflecting mini-challenge status
             let skillsCautionHtml = '';
             if (!allSkillsDone && node.hasMiniChallenge) {
                 skillsCautionHtml = `<p style="font-size:0.78rem; color:#F59E0B; margin:8px 0 0 0;">⚠️ ${t.skillsCautionMini}</p>`;
